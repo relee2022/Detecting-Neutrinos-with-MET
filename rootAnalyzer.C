@@ -12,7 +12,7 @@
 
 //the code execution starts here
 void rootAnalyzer(){
-  bool TestRun=1;
+  bool TestRun= 0;
 
   //define some variables we need for later
   std::vector<float> * genPt = 0;
@@ -50,9 +50,9 @@ void rootAnalyzer(){
   recoTree->SetBranchAddress("pfId",&recoId);
 
   //Raven: define analysis variables under here until next comment!
-   TH1* h1 = new TH1F("h1", "Pt;X-axis;Occurences", 100, -2.0, 6.0);
-   TH1* h2 = new TH1F("h2", "Eta;eta;Occurences", 100, -6.0, 6.0);
-   TH1* h3 = new TH1F("h3", "Phi;phi;Occurences", 100, -6.0, 6.0);
+   TH1* h1 = new TH1F("h1", "GenPt;X-axis;Occurences", 100, -2.0, 6.0);
+   TH1* h2 = new TH1F("h2", "GenEta;eta;Occurences", 100, -6.0, 6.0);
+   TH1* h3 = new TH1F("h3", "GenPhi;phi;Occurences", 100, -6.0, 6.0);
 
    TH1* h4 = new TH1F("h4", "Reco Pt;pt;Occurences;", 100, -2.0, 6.0);
    TH1* h5 = new TH1F("h5", "Reco Eta;eta;Occurences", 100, -6.0, 6.0);
@@ -68,22 +68,24 @@ void rootAnalyzer(){
     TH1* h10 = new TH1F("h10", "RecoPt_y;Py", 100, -4.0, 4.0);
 
     
-    TH1* h11 = new TH1F("h11", "GenPn;Pn_x;", 100, -20.0, 20.0);
-    TH1* h12 = new TH1F("h12", "GenPn_;Pn_y;", 100, -20.0, 20.0);
-    TH1* h13 = new TH1F("h13", "RecoPn2;Pn_x", 100, -20.0, 20.0);
-    TH1* h14 = new TH1F("h14", "RecoPn2_;Pn_y", 100, -20.0, 20.0);
+    TH1* h11 = new TH1F("h11", "GenPn;Pn_x;", 100, -40.0, 40.0);
+    TH1* h12 = new TH1F("h12", "GenPn_;Pn_y;", 100, -40.0, 40.0);
+    TH1* h13 = new TH1F("h13", "RecoPn2;Pn_x", 100, -40.0, 40.0);
+    TH1* h14 = new TH1F("h14", "RecoPn2_;Pn_y", 100, -40.0, 40.0);
 
-    TH1* h15 = new TH1F("h15", "GenPt_new;Pt;", 100, -20.0, 20.0);
+    TH1* h15 = new TH1F("h15", "GenPt_new;Pt;", 100, 0, 100.0);
     TH1* h16 = new TH1F("h16", "GenPhi_new;Phi;", 100, TMath::Pi(), TMath::Pi());
-    TH1* h17 = new TH1F("h17", "RecoPt_new;Pt", 100, -20.0, 20.0);
+    TH1* h17 = new TH1F("h17", "RecoPt_new;Pt", 100, 0, 70.0);
     TH1* h18 = new TH1F("h18", "RecoPhi_new;Phi", 100, TMath::Pi(), TMath::Pi());
-
+    
     TH1* h_isGenPhiZero = new TH1F("h_isGenPhiZero", "isGenPhiZero;Phi", 100, TMath::Pi(), TMath::Pi());
     TH1* h_isGenPhiZeroY = new TH1F("h_isGenPhiZeroY", "isGenPhiZeroY;Phi", 100, TMath::Pi(), TMath::Pi());
 
     
-    TH1* h_CMSPt = new TH1F("h_CMSPt", "Reco-GenPt;Pt", 100, -20,20);
-    TH1* h_CMSPhi = new TH1F("h_CMSPhi", "Reco-GenPhi;Phi", 100, -20,20);
+    TH1* h_CMSPt = new TH1F("h_CMSPt", "Reco-GenPt;Pt", 100, -40,80);
+    TH1* h_CMSPhi = new TH1F("h_CMSPhi", "Reco-GenPhi;Phi", 100, -10,10);
+    TH1* h_CMSEta = new TH1F("h_CMSEta", "Reco-GenEta;Eta", 100, -20,20);
+
 
 
   //stop here!
@@ -133,9 +135,13 @@ void rootAnalyzer(){
       {
       std::cout<<"Invalid"<<std::endl;
       }
-  
-      //stop here!
-    }
+
+     if (genPdg == 12 || genPdg == 14 || genPdg == 16 || genPdg == -12 || genPdg == -14 || genPdg == -16) 
+     {
+      continue;
+     }
+     
+
      h11->Fill(Pn);
      h12->Fill(Pn2); 
 
@@ -152,6 +158,7 @@ void rootAnalyzer(){
     
      h15->Fill(genPt_new);
      h16->Fill(genPhi_new);
+    }
 
     //load the reco particles
     recoTree->GetEntry(i);
@@ -194,7 +201,10 @@ void rootAnalyzer(){
          }
 
 
-        //stop here!
+        if (recoEta>-2.4 || recoEta<2.4 )
+        {
+            continue;
+        }
     }
             //Fill Added Vectors for Gen/Reco
      h13->Fill(Pn3);
@@ -205,6 +215,7 @@ void rootAnalyzer(){
 
      CMS_effPt=recoPt_new-genPt_new;
      CMS_effPhi=recoPhi_new-genPhi_new;
+
 
     h_CMSPt->Fill(CMS_effPt);
      h_CMSPhi->Fill(CMS_effPhi);
@@ -285,16 +296,17 @@ void rootAnalyzer(){
      TCanvas *c14 = new TCanvas();
      h18->Draw();
 
-    TCanvas *c_isGenZero = new TCanvas();
+    /*TCanvas *c_isGenZero = new TCanvas();
      h_isGenPhiZero->Draw();
     TCanvas *c_isGenZeroY = new TCanvas();
-     h_isGenPhiZeroY->Draw();
+     h_isGenPhiZeroY->Draw();*/
     TCanvas *c_cmsPt = new TCanvas();
      h_CMSPt->Draw();
     TCanvas *c_cmsPhi = new TCanvas();
-     h_CMSPhi->Draw();
-     
-/*c->SaveAs("C:/Users/user/Desktop/RecoGen_pt.png");    
+     h_CMSPhi->Draw(); 
+
+ 
+c->SaveAs("C:/Users/user/Desktop/RecoGen_pt.png");    
 c1->SaveAs("C:/Users/user/Desktop/RecoGen_eta.png");
 c2->SaveAs("C:/Users/user/Desktop/RecoGen_phi.png");
 c3->SaveAs("C:/Users/user/Desktop/Gen_px.png");
@@ -304,6 +316,12 @@ c6->SaveAs("C:/Users/user/Desktop/Reco_py.png");
 c7->SaveAs("C:/Users/user/Desktop/Gen_pnx.png");
 c8->SaveAs("C:/Users/user/Desktop/Gen_pny.png");
 c9->SaveAs("C:/Users/user/Desktop/Reco_pnx.png");
-c10->SaveAs("C:/Users/user/Desktop/Reco_pny.png"); */
+c10->SaveAs("C:/Users/user/Desktop/Reco_pny.png"); 
+c11->SaveAs("C:/Users/user/Desktop/genPt_new.png");
+c12->SaveAs("C:/Users/user/Desktop/genPhi_new.png");
+c13->SaveAs("C:/Users/user/Desktop/recoPt_new.png");
+c14->SaveAs("C:/Users/user/Desktop/recoPhi_new.png");
+c_cmsPt->SaveAs("C:/Users/user/Desktop/CMS_effPt.png");
+c_cmsPhi->SaveAs("C:/Users/user/Desktop/CMS_effPhi.png"); 
 
 }
