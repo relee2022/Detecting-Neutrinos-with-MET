@@ -274,7 +274,7 @@ float CMS_effPtA[5]={0}, CMS_effPtno[5]={0},bPhi[5]={0},bEta[5]={0},bPt[5]={0},d
           genPhi_newA[k]=TMath::ATan(Pn2/Pn);                           //calculate new missing phi 
            }
         else if (Pn<0){
-           genPhi_new[k]=TMath::ATan2(Pn2,Pn);
+           genPhi_newA[k]=TMath::ATan2(Pn2,Pn);
            }
         else{
            std::cout<<"Invalid1"<<std::endl;
@@ -479,7 +479,7 @@ cout<<"394"<<endl;
       genPhi_new2=TMath::ATan(Pn2_2/Pn_2);
     }
 
-      else if (Pn<0)
+      else if (Pn_2<0)
       {
         genPhi_new2=TMath::ATan2(Pn2_2,Pn_2);
       }
