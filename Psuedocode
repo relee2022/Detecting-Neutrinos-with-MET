@@ -1,0 +1,81 @@
+root Analyzer
+{
+open 1st file
+ 
+open 2nd File
+
+define histogramns
+
+float initalize Reco/Gen New Pt Array
+
+for loop Get Entries:
+
+    float initalize remaining varibables
+        for loop Pt cuts K 5
+        float initialize Pn,Pn2: added x and y 
+            for loop Gen:
+                if charges and Pt cut:
+                    Fill gen pt,eta,phi
+                end
+                if neutrino:
+                    Fill neutrino pt,eta,phi
+                        if Eta cut:
+                            continue
+                end
+                if charges and Pt cut:
+                    calculate missing momentum
+                    Fill histogramns
+                    if neutrino
+                        continue
+                    if muon
+                        muons Pt,Phi, Eta
+                end
+            end
+        end
+
+    for loop Pt cuts of K:
+    float initialize Pn,Pn2: added x and y 
+        for loop Reco:
+            if reco Pt cut
+                fill reco pt,eta,phi
+                    if eta cut
+                    continue
+                calculate missing momentum
+                fill histograms
+            end
+        end
+    end
+    for K loop
+        Reco & gen with cuts
+        Fill gen pt & neutrino
+        Fill gen pt & ratio
+        Calculate & fill reco-gen 1D
+    end
+    Fill neutrinos pt,eta,phi
+end
+
+2nd file starts
+
+for numEntries i
+float all variables
+    for gen loop:
+        if eta
+            continue
+        end
+        Fill gen eta,pt,phi
+        calculate missing momentum
+        Fill histograms
+    end
+    for Reco loop
+        if eta
+            continue
+        end
+        Fill reco pt,eta,phi
+        calculate missing momentum
+    end
+    Fill Reco & gen comparisons
+end
+
+Draw histograms
+
+}
