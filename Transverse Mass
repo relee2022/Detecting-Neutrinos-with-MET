@@ -975,12 +975,8 @@ cout<<"LINE 699"<<endl;
       TCanvas *cmT = new TCanvas();
       hmT[0]->Draw();
       for(int i=1;i<5;i++){
-        hmT[i]->Draw("SAME"); }
+      hmT[i]->Draw("SAME"); }
       hmT[0]->SetStats(0);
-      double x_position = 80.377;
-      TLine *line = new TLine(x_position, cmT->GetUymin(), x_position, cmT->GetUymax());
-      line->SetLineStyle(2);
-      line->Draw();
       TLegend *legend25 = new TLegend(0.6, 0.6, 0.85, 0.85); 
       legend25->AddEntry((TObject*)0,"pp Collisons","");
       for(int i=0;i<5;i++){
@@ -988,6 +984,11 @@ cout<<"LINE 699"<<endl;
       hmT[0]->GetXaxis()->CenterTitle(true);
       hmT[0]->GetYaxis()->CenterTitle(true);
       legend25->SetTextSize(.03); 
+      double wboson = 80.377;
+      TLine *line = new TLine(wboson, cmT->GetUymin(), wboson, cmT->GetUymax());
+      line->SetLineStyle(3);
+      line->SetLineColor(kBlack);
+      line->Draw("SAME");
       legend25->Draw();
 
      
