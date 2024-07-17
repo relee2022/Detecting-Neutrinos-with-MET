@@ -8,11 +8,12 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include <vector>
-#include <iostream>
 #include "TLine.h"
+#include <iostream>
+
 
 //the code execution starts here
-void rootAnalyzer(){
+void PossibleLessEvents(){
   bool TestRun=0;
   float cut[5]={1,2,3,4,5};
 
@@ -177,13 +178,13 @@ cout<<"136"<<endl;
     for(int i=0;i<5;i++){
       hRecoGenPt[i] = new TH2F(Form("hRecoGenPt%.1f",cut[i]),"Reco Vs. Gen Pt;Gen P_{T}^{miss} [GeV];Rec P_{T}^{miss} [GeV]", 100, 0.0, 60.0, 100, 0,60);
     
-      hmT[i] = new TH1F(Form("hmT%.1f",cut[i]), "Transverse Mass;M_{T} [GeV];Events", 100, 0, 120);
+      hmT[i] = new TH1F(Form("hmT%.0f",cut[i]), "Transverse Mass;M_{T} [GeV];Events", 100, 0, 120);
       }
 
 cout<<"160"<<endl;
 int p=0;
 
-float genPt_newA[5]={0}, recoPt_newA[5]={0}, genPhi_newA[5]={0};
+float genPt_newA[5]={0}, recoPt_newA[5]={0}, genPhi_newA[5]={0}, recoPhi_newA[5]={0};
 float CMS_effPtA[5]={0}, CMS_effPtno[5]={0},bPhi[5]={0},bEta[5]={0},bPt[5]={0},deltaPhi[5]={0},mT[5]={0};
 
   //loop through each event with index i
@@ -378,6 +379,20 @@ float CMS_effPtA[5]={0}, CMS_effPtno[5]={0},bPhi[5]={0},bEta[5]={0},bPt[5]={0},d
         std::cout<<"Invalid2"<<std::endl;
          }
 
+               if(Pn3>0)                                          //Allows us to graph New phi in all regions
+      {
+        recoPhi_newA[k]=TMath::ATan(Pn4/Pn3);
+      }
+
+       else if (Pn3<0)
+        {
+         recoPhi_newA[k]=TMath::ATan2(Pn4,Pn3);
+        }
+         else 
+         {
+        std::cout<<"Invalid2"<<std::endl;
+         }
+
 
 
         h13->Fill(Pn3);                        //Fill new Added Vectors for x and y
@@ -414,9 +429,9 @@ float CMS_effPtA[5]={0}, CMS_effPtno[5]={0},bPhi[5]={0},bEta[5]={0},bPt[5]={0},d
       h_CMSPt[k]->Fill(CMS_effPtA[k]);                //fills when p
 
 
-      deltaPhi[k] = (TMath::Cos(bPhi[k] - genPhi_newA[k]));
+      deltaPhi[k] = (TMath::Cos(bPhi[k] - recoPhi_newA[k]));
        // cout<<"deltaphi"<<deltaPhi<<endl;
-      mT[k]=TMath::Sqrt(2*bPt[k]*genPt_new[k]*(1-deltaPhi[k]));
+      mT[k]=TMath::Sqrt(2*bPt[k]*recoPt_newA[k]*(1-deltaPhi[k]));
       //  cout<<"MT"<<mT<<endl;
       if(mT!=0){
         hmT[k]->Fill(mT[k]);
@@ -613,7 +628,7 @@ cout<<"394"<<endl;
 
 
  
-      TCanvas *c = new TCanvas();              //Gen & Reco Pt
+    /*  TCanvas *c = new TCanvas();              //Gen & Reco Pt
       h1->Draw(); 
       h4->Draw("SAME");
       TLegend *legend = new TLegend(0.1, 0.7, 0.3, 0.9); 
@@ -757,14 +772,14 @@ cout<<"LINE 699"<<endl;
       h15[3]->SetLineColor(kViolet);
       h15[4]->SetLineColor(kGreen); 
 
-     /* TCanvas *c11 = new TCanvas();           //New Gen Pt - 1st and 2nd File
+      TCanvas *c11 = new TCanvas();           //New Gen Pt - 1st and 2nd File
       h15->Draw(); 
       h15_2->Draw("SAME");
       TLegend *legend14 = new TLegend(0.1, 0.7, 0.3, 0.9); 
       legend14->AddEntry(h15,"With Pt ","l"); // "l" specifies line for histogram
       legend14->AddEntry(h15_2, "No neutrino", "l"); 
       legend14->SetTextSize(.03); 
-      legend14->Draw(); */
+      legend14->Draw(); 
 
       TCanvas *c11 = new TCanvas();           //New Gen Pt - 1st and 2nd File
       h15[0]->Draw(); 
@@ -839,7 +854,7 @@ cout<<"LINE 699"<<endl;
     TCanvas *c_isGenZeroY = new TCanvas();
      h_isGenPhiZeroY->Draw();
    TCanvas *c_cmsPt = new TCanvas();
-     h_CMSPt->Draw();*/
+     h_CMSPt->Draw();
 
     TCanvas *c_cmsPhi = new TCanvas();
      h_CMSPhi->Draw(); 
@@ -862,6 +877,7 @@ cout<<"LINE 699"<<endl;
       for(int i=1;i<5;i++){
       h_CMSPt[i]->Draw("SAME"); }
       h_CMSPt2->Draw("SAME");
+      h_CMSPt[0]->SetStats(0);
       TLegend *legend20 = new TLegend(0.15, 0.4, 0.4, 0.85); 
       h_CMSPt[0]->GetYaxis()->SetRangeUser(0,1500);
       legend20->AddEntry((TObject*)0,"pp Collisons","");
@@ -911,7 +927,7 @@ cout<<"LINE 699"<<endl;
       legend13->AddEntry(h_moreRecoPt, "more", "l"); // "l" specifies line for histogram
       legend13->AddEntry(h_lessRecoPt, "less", "l");
       legend13->SetTextSize(.03); 
-      legend13->Draw(); */
+      legend13->Draw(); 
 
       TCanvas *creco2 = new TCanvas();
        h_nuPhi->Draw();
@@ -949,7 +965,9 @@ cout<<"LINE 699"<<endl;
   TCanvas *crecogenPt[5];
       for(int i=0;i<5;i++){
        new TCanvas();
-      hRecoGenPt[i]->Draw("COLZ");}
+      hRecoGenPt[i]->Draw("COLZ");
+      hRecoGenPt[i]->SetStats(0);
+        }
 
     //  TCanvas *crat =  new TCanvas();
      // hRecoGenPtRat->Draw("COLZ");
@@ -957,14 +975,39 @@ cout<<"LINE 699"<<endl;
       TCanvas *CgenPtnuPt= new TCanvas();
       hGenPtNuPt->Draw("COLZ");
       TCanvas *noGenRecoPt= new TCanvas();
-      hRecoGenPt_2->Draw("COLZ");
+      hRecoGenPt_2->Draw("COLZ");                     
 
       TCanvas *cbPt = new TCanvas();
       hbPt->Draw();
       TCanvas *cbEta = new TCanvas();
       hbEta->Draw();
-      TCanvas *cbPhi = new TCanvas();
-      hbPhi->Draw();
+      TCanvas *cbPhi = new TCanvas();              
+      hbPhi->Draw();                              */
+
+      h_CMSPt[0]->SetLineColor(kRed);
+      h_CMSPt[1]->SetLineColor(kOrange);
+      h_CMSPt[2]->SetLineColor(kBlack);
+      h_CMSPt[3]->SetLineColor(kViolet);
+      h_CMSPt[4]->SetLineColor(kGreen);
+
+      TCanvas *c_cmsPt = new TCanvas(); 
+      h_CMSPt[0]->Draw(); 
+      for(int i=1;i<5;i++){
+      h_CMSPt[i]->Draw("SAME"); }
+      h_CMSPt2->Draw("SAME");
+      h_CMSPt[0]->SetStats(0);
+      c_cmsPt->SetLogy();
+      TLegend *legend20 = new TLegend(0.15, 0.4, 0.4, 0.85); 
+      h_CMSPt[0]->GetYaxis()->SetRangeUser(1,2000);
+      legend20->AddEntry((TObject*)0,"pp Collisons","");
+      for(int i=0;i<5;i++){
+      legend20->AddEntry(h_CMSPt[i], Form("With neutrino Pt %.0f",cut[i]), "l");} // "l" specifies line for histogram
+      legend20->AddEntry(h_CMSPt2, "No neutrino", "l"); 
+      legend20->SetTextSize(.03); 
+      h_CMSPt[0]->GetXaxis()->CenterTitle(true);
+      h_CMSPt[0]->GetYaxis()->CenterTitle(true);
+      legend20->Draw();
+
 
       hmT[0]->SetLineColor(kRed);
       hmT[1]->SetLineColor(kOrange);
@@ -977,6 +1020,12 @@ cout<<"LINE 699"<<endl;
       for(int i=1;i<5;i++){
       hmT[i]->Draw("SAME"); }
       hmT[0]->SetStats(0);
+      hmT[4]->GetYaxis()->SetRangeUser(1,(hmT[4]->GetMaximum())*1.2);
+      double wboson = 80.377;
+      TLine *line = new TLine(wboson, hmT[0]->GetMinimum(), wboson, hmT[0]->GetMaximum());
+      line->SetLineStyle(3);
+      line->SetLineColor(kBlack);
+      line->Draw("SAME");
       TLegend *legend25 = new TLegend(0.6, 0.6, 0.85, 0.85); 
       legend25->AddEntry((TObject*)0,"pp Collisons","");
       for(int i=0;i<5;i++){
@@ -984,12 +1033,9 @@ cout<<"LINE 699"<<endl;
       hmT[0]->GetXaxis()->CenterTitle(true);
       hmT[0]->GetYaxis()->CenterTitle(true);
       legend25->SetTextSize(.03); 
-      double wboson = 80.377;
-      TLine *line = new TLine(wboson, cmT->GetUymin(), wboson, cmT->GetUymax());
-      line->SetLineStyle(3);
-      line->SetLineColor(kBlack);
-      line->Draw("SAME");
       legend25->Draw();
+
+      //cout<<cmT->GetUymax()<<cmT->GetUymin()<<endl;
 
      
 /*c->SaveAs("C:/Users/user/Desktop/RecoGen_pt.png");    
@@ -1020,7 +1066,8 @@ cnuPtEta->SaveAs("C:/Users/user/Desktop/NuPtEtaMore.png");
 cnuPtEtaless->SaveAs("C:/Users/user/Desktop/RecoGen_eta-no.png"); 
 crecogenPt5->SaveAs("C:/Users/user/Desktop/5RecoVsGenChg.png");  
 crat->SaveAs("C:/Users/user/Desktop/Ratio.png"); */
-//Form("crecogenPt%f",cut)->SaveAsForm("C:/Users/user/Desktop/%fAdjustERecoVsGenChg.png",cut);  
+//for(int i=0;i<5:i++){
+//Form("crecogenPt%f",cut[i])->SaveAsForm("C:/Users/user/Desktop/%fAdjustERecoVsGenChg.png",cut[i]);  }
 //CgenPtnuPt->SaveAs("C:/Users/user/Desktop/AdjustGenNuPt.png");  
 //noGenRecoPt->>SaveAs("C:/Users/user/Desktop/NoGenReco.png"); 
 
@@ -1031,8 +1078,8 @@ hbPhi->SaveAs("C:/Users/user/Desktop/b Phi.png");
 hbPt->SaveAs("C:/Users/user/Desktop/b Pt.png");*/
 
 
-h_CMSPt->SaveAs("C:/Users/user/Desktop/Reco-Gen with Cut.png"); 
-cmT->SaveAs("C:/Users/user/Desktop/TransMassCuts"); 
+c_cmsPt->SaveAs("C:/Users/user/Desktop/Reco-Gen with Cut.png"); 
+cmT->SaveAs("C:/Users/user/Desktop/EditRTransMassCuts.png"); 
 
 
  /*TFile * file = TFile::Open("C:/Users/user/Desktop/filept.root","RECREATE");
