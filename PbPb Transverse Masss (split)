@@ -655,17 +655,15 @@ cout<<"453"<<endl;
             hrecosize->Fill(recoPt->size());
            
 
-float integralUpToBin = hrecosize->Integral(1, 50);
           
-
-// Assuming hrecosize is your TH1 histogram
+//2nd attempt
 float totalIntegral = hrecosize->Integral();
 float halfIntegral = 0.5 * totalIntegral; // 50% of the total integral
 
 float cIntegral = 0.0;
-int binAtHalfIntegral = -1; // Initialize to an invalid bin number
+int binAtHalfIntegral = -1; // Initialized random bin number
 
-// Loop over bins to find where cumulative integral reaches 50%
+// Loop over bins to find where integral reaches 50%
 for (int bin = 1; bin <= hrecosize->GetNbinsX(); bin++) {
     cIntegral += hrecosize->GetBinContent(bin);
     if (cIntegral >= halfIntegral) {
@@ -712,11 +710,11 @@ for (int bin = 1; bin <= hrecosize->GetNbinsX(); bin++) {
       mT2[k]=TMath::Sqrt(2*bPt2[k]*recoPt_newA2[k]*(1-deltaPhi2[k]));
       hmT2[k]->Fill(mT2[k]);
    
-   if(4300>recoPt->size())
+   if(4750>recoPt->size())
    {
     hmT2_split[k]->Fill(mT2[k]);
    }
-   else if (4300<recoPt->size())
+   else if (4750<recoPt->size())
    {
     hmT2_split2[k]->Fill(mT2[k]);
    }
@@ -730,16 +728,18 @@ for (int bin = 1; bin <= hrecosize->GetNbinsX(); bin++) {
       h_nuEta2->Fill(nuEta2); 
   }
 
-  cout<<"Find integral at 50 percent: "<<integralUpToBin<<endl;
 
 // binAtHalfIntegral now contains the bin number where cumulative integral is 50%
 if (binAtHalfIntegral != -1) {
     float integralAtHalf = hrecosize->Integral(1, binAtHalfIntegral);
-    cout << "Integral at 50% cumulative: " << integralAtHalf << " Bin at half: "<<binAtHalfIntegral<<endl;
+    cout << "Integral at 50percent: " << integralAtHalf << " Bin at half: "<<binAtHalfIntegral<<endl;
 } else {
-    cout << "No bin found where cumulative integral reaches 50 perccent" << endl;
+    cout << "Invalid:not found" << endl;
 }
 
+float center=hrecosize->GetBinCenter(48);
+
+cout<<"Center of bin: "<<center<<endl;
 
   cout<<"709-End of Second File"<<endl;
 
@@ -1149,6 +1149,7 @@ cout<<"LINE 699"<<endl;
       for(int i=1;i<5;i++){
       h_CMSPt_Pb[i]->Draw("SAME"); }
       h_CMSPt_Pb[0]->SetStats(0);
+     // c_cmsPt2->SetLogy();
       TLegend *legend31 = new TLegend(0.15, 0.4, 0.4, 0.85); 
       h_CMSPt_Pb[0]->GetYaxis()->SetRangeUser(1,(h_CMSPt_Pb[4]->GetMaximum())*1.2);
       legend31->AddEntry((TObject*)0,"PbPb Collisons","");
@@ -1286,10 +1287,10 @@ hbPt->SaveAs("C:/Users/user/Desktop/b Pt.png");*/
 //c_cmsPt->SaveAs("C:/Users/user/Desktop/Reco-Gen with Cut.png"); 
 //cmT->SaveAs("C:/Users/user/Desktop/EditRTransMassCuts.png"); 
 //cmT2->SaveAs("C:/Users/user/Desktop/PbPbTransMassCuts.png");
-//c_cmsPt2->SaveAs("C:/Users/user/Desktop/PbSplitReco-Gen.png");
+c_cmsPt2->SaveAs("C:/Users/user/Desktop/PbSplitReco-Gen.png");
 //crecosize->SaveAs("C:/Users/user/Desktop/RecoParSize.png");
-//cmT2_split->SaveAs("C:/Users/user/Desktop/LessTransMass.png");
-//cmT2_split2->SaveAs("C:/Users/user/Desktop/GreaterTransMass.png");
+cmT2_split->SaveAs("C:/Users/user/Desktop/BLessTransMass.png");
+cmT2_split2->SaveAs("C:/Users/user/Desktop/BGreaterTransMass.png");
 
 
 }
