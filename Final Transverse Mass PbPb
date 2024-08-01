@@ -152,11 +152,11 @@ cout<<"136"<<endl;
   TH1* h_CMSPt_Pb[5];
  TH1* h_CMSPtNo2[5];
    for(int i=0;i<5;i++){
-      h_CMSPt[i] = new TH1F(Form("h_CMSPt%.1f",cut[i]),"CMS Evaluation;Rec P_{T}^{miss} - Gen P_{T}^{miss} [GeV];Events",100,-15,15);
+      h_CMSPt[i] = new TH1F(Form("h_CMSPt%.1f",cut[i])," ;Rec P_{T}^{miss} - Gen P_{T}^{miss} [GeV];Events",100,-15,15);
       //reco-gen both with cuts
       h_CMSPtNo[i] = new TH1F(Form("h_CMSPtNo%.1f",cut[i]),"Reco-Gen Pt No Gen cuts;Rec P_{T}^{miss} - Gen P_{T}^{miss} [GeV];Events", 100, -30, 50);
       //Gen has no cuts
-      h_CMSPt_Pb[i] = new TH1F(Form("h_CMSPt%.1f",cut[i]),"CMS Evaluation;Rec P_{T}^{miss} - Gen P_{T}^{miss} [GeV];Events",100,-15,15);
+      h_CMSPt_Pb[i] = new TH1F(Form("h_CMSPt%.1f",cut[i])," ;Rec P_{T}^{miss} - Gen P_{T}^{miss} [GeV];Events",100,-15,15);
       //reco-gen both with cuts
       h_CMSPtNo2[i] = new TH1F(Form("h_CMSPtNo2%.1f",cut[i]),"Reco-Gen Pt No Gen cuts;Rec P_{T}^{miss} - Gen P_{T}^{miss} [GeV];Events", 100, -30, 50);}
 
@@ -187,17 +187,23 @@ cout<<"136"<<endl;
   TH1* hmT[5];
   TH2* hRecoGenPt_Pb[5];
   TH1* hmT2[5];
+  TH1* hmT2_split[5];
+  TH1* hmT2_split2[5];
     for(int i=0;i<5;i++){
       hRecoGenPt[i] = new TH2F(Form("hRecoGenPt%.1f",cut[i]),"Reco Vs. Gen Pt;Gen P_{T}^{miss} [GeV];Rec P_{T}^{miss} [GeV]", 100, 0.0, 60.0, 100, 0,60);
-      hRecoGenPt_Pb[i] = new TH2F(Form("hRecoGenPt_Pb%.1f",cut[i]),Form("Reco Vs. Gen Pt %.0f;Gen P_{T}^{miss} [GeV];Rec P_{T}^{miss} [GeV]",cut[i]), 100, 0.0, 100.0, 100, 0,100);
+      hRecoGenPt_Pb[i] = new TH2F(Form("hRecoGenPt_Pb%.1f",cut[i]),"Reco Vs. Gen Pt ;Gen P_{T}^{miss} [GeV];Rec P_{T}^{miss} [GeV]", 100, 0.0, 100.0, 100, 0,100);
 
       hmT[i] = new TH1F(Form("hmT%.1f",cut[i]), "Transverse Mass;M_{T} [GeV];Events", 100, 0, 120);
       hmT2[i] = new TH1F(Form("hmT2%.1f",cut[i]), "Transverse Mass;M_{T} [GeV];Events", 100, 0, 120);
+      hmT2_split[i] = new TH1F(Form("hmT2%.1f",cut[i]), "Transverse Mass;M_{T} [GeV];Events", 100, 0, 120);
+      hmT2_split2[i] = new TH1F(Form("hmT2%.1f",cut[i]), "Transverse Mass ;M_{T} [GeV];Events", 100, 0, 120);
       }
-
+    TH1* hrecosize= new TH1F("hrecosize","Reco Particle Size;Pt;events",100,0,10000);
 
 cout<<"160"<<endl;
 int p=0;
+int count=0;
+ //int size=10000;
 
 float genPt_newA[5]={0}, recoPt_newA[5]={0}, genPhi_newA[5]={0},recoPhi_newA[5]={0};
 float CMS_effPtA[5]={0}, CMS_effPtno[5]={0},bPhi[5]={0},bEta[5]={0},bPt[5]={0},deltaPhi[5]={0},mT[5]={0};
@@ -643,8 +649,31 @@ cout<<"453"<<endl;
 
         h13_2->Fill(Pn3_2);                        //Fill new Added Vectors for x and y
         h14_2->Fill(Pn4_2);
+
+      if(k==4)
+         {
             
-        
+           
+
+          
+//2nd attempt
+float totalIntegral = hrecosize->Integral();
+float halfIntegral = 0.5 * totalIntegral; // 50% of the total integral
+
+float cIntegral = 0.0;
+int binAtHalfIntegral = -1; // Initialized random bin number
+
+// Loop over bins to find where integral reaches 50%
+for (int bin = 1; bin <= hrecosize->GetNbinsX(); bin++) {
+    cIntegral += hrecosize->GetBinContent(bin);
+    if (cIntegral >= halfIntegral) {
+        binAtHalfIntegral = bin;
+        break;
+    }
+}
+}
+
+
      h17_Pb[k]->Fill(recoPt_newA2[k]);
      h17_2->Fill(recoPt_new2);
      h18_2->Fill(recoPhi_new2); 
@@ -679,21 +708,46 @@ cout<<"453"<<endl;
       deltaPhi2[k] = (TMath::Cos(bPhi2[k] - recoPhi_newA2[k]));
        // cout<<"deltaphi"<<deltaPhi<<endl;
       mT2[k]=TMath::Sqrt(2*bPt2[k]*recoPt_newA2[k]*(1-deltaPhi2[k]));
-      //  cout<<"MT"<<mT<<endl;
-      if(mT!=0){
-        hmT2[k]->Fill(mT2[k]);
+      hmT2[k]->Fill(mT2[k]);
+
+   if(k==4){
+    hrecosize->Fill(recoPt->size());
+   }
+
+   if(recoPt->size()<4750)
+   {
+    hmT2_split[k]->Fill(mT2[k]);
+   //cout<<recoPt->size()<<endl;
+   }
+   else if (recoPt->size()>=4750)
+   {
+    //cout<<recoPt->size()<<endl;
+    hmT2_split2[k]->Fill(mT2[k]);
+   }
+
         }
-  }
+
       
 
      h_nuPt2->Fill(nuPt2);
       h_nuPhi2->Fill(nuPhi2);
       h_nuEta2->Fill(nuEta2); 
-    }
-  
+  }
 
 
-  cout<<"544-End of Second File"<<endl;
+// binAtHalfIntegral now contains the bin number where cumulative integral is 50%
+if (binAtHalfIntegral != -1) {
+    float integralAtHalf = hrecosize->Integral(1, binAtHalfIntegral);
+    cout << "Integral at 50percent: " << integralAtHalf << " Bin at half: "<<binAtHalfIntegral<<endl;
+} else {
+    cout << "Invalid:not found" << endl;
+}
+
+float center=hrecosize->GetBinCenter(17);
+
+cout<<"Center of bin: "<<center<<endl;
+
+  cout<<"709-End of Second File"<<endl;
 
   h1-> SetLineColor(kRed);             //Set Color of Gen
   h2-> SetLineColor(kRed);
@@ -720,7 +774,7 @@ cout<<"453"<<endl;
   h4->Scale(1.0 / n);
   h5->Scale(1.0 / n2);
   h6->Scale(1.0 / n3);
-   h1->Scale(1.0 / n4);
+  h1->Scale(1.0 / n4);
   h2->Scale(1.0 / n5);                    //scale of gen graphs to reco size
   h3->Scale(1.0 / n6);
 
@@ -1080,7 +1134,7 @@ cout<<"LINE 699"<<endl;
       TCanvas *cbEta = new TCanvas();
       hbEta->Draw();
       TCanvas *cbPhi = new TCanvas();
-      hbPhi->Draw();                      */
+      hbPhi->Draw();                      
 
       
     TCanvas *crecogenPt2[5];
@@ -1088,7 +1142,7 @@ cout<<"LINE 699"<<endl;
        new TCanvas();
       hRecoGenPt_Pb[i]->Draw("COLZ");
       hRecoGenPt_Pb[i]->SetStats(0);
-        }
+        }                                           */
 
       h_CMSPt_Pb[0]->SetLineColor(kRed);
       h_CMSPt_Pb[1]->SetLineColor(kOrange);
@@ -1101,6 +1155,7 @@ cout<<"LINE 699"<<endl;
       for(int i=1;i<5;i++){
       h_CMSPt_Pb[i]->Draw("SAME"); }
       h_CMSPt_Pb[0]->SetStats(0);
+     // c_cmsPt2->SetLogy();
       TLegend *legend31 = new TLegend(0.15, 0.4, 0.4, 0.85); 
       h_CMSPt_Pb[0]->GetYaxis()->SetRangeUser(1,(h_CMSPt_Pb[4]->GetMaximum())*1.2);
       legend31->AddEntry((TObject*)0,"PbPb Collisons","");
@@ -1116,6 +1171,9 @@ cout<<"LINE 699"<<endl;
       hmT[2]->SetLineColor(kBlack);
       hmT[3]->SetLineColor(kViolet);
       hmT[4]->SetLineColor(kBlue);
+
+      TCanvas *crecosize= new TCanvas();
+      hrecosize->Draw();
 
       /*TCanvas *cmT = new TCanvas();
       hmT[0]->Draw();
@@ -1139,7 +1197,7 @@ cout<<"LINE 699"<<endl;
       //cout<<cmT->GetUymax()<<cmT->GetUymin()<<endl;
 
      
-      hmT2[0]->SetLineColor(kRed);
+     /* hmT2[0]->SetLineColor(kRed);
       hmT2[1]->SetLineColor(kOrange);
       hmT2[2]->SetLineColor(kBlack);
       hmT2[3]->SetLineColor(kViolet);
@@ -1149,7 +1207,7 @@ cout<<"LINE 699"<<endl;
       hmT2[0]->Draw();
       for(int i=1;i<5;i++){
       hmT2[i]->Draw("SAME"); }
-      hmT2[0]->SetStats(0);
+      //hmT2[0]->SetStats(0);
       hmT2[0]->GetYaxis()->SetRangeUser(1,(hmT2[4]->GetMaximum())*1.2);
       double wboson = 80.377;
       TLine *line2 = new TLine(wboson, hmT2[0]->GetMinimum(), wboson, (hmT2[0]->GetMaximum())*1.2);
@@ -1163,7 +1221,60 @@ cout<<"LINE 699"<<endl;
       hmT2[0]->GetXaxis()->CenterTitle(true);
       hmT2[0]->GetYaxis()->CenterTitle(true);
       legend30->SetTextSize(.03); 
-      legend30->Draw();
+      legend30->Draw();                             */
+
+      hmT2_split[0]->SetLineColor(kRed);
+      hmT2_split[1]->SetLineColor(kOrange);
+      hmT2_split[2]->SetLineColor(kBlack);
+      hmT2_split[3]->SetLineColor(kViolet);
+      hmT2_split[4]->SetLineColor(kBlue);
+
+      TCanvas *cmT2_split = new TCanvas();
+      hmT2_split[0]->Draw();
+      for(int i=1;i<5;i++){
+      hmT2_split[i]->Draw("SAME"); }
+      //hmT2_split[0]->SetStats(0);
+      hmT2_split[0]->GetYaxis()->SetRangeUser(1,(hmT2_split[4]->GetMaximum())*1.2);
+      double wboson = 80.377;
+      TLine *line3 = new TLine(wboson, hmT2_split[0]->GetMinimum(), wboson, (hmT2_split[0]->GetMaximum()));
+      line3->SetLineStyle(3);
+      line3->SetLineColor(kBlack);
+      line3->Draw("SAME");
+      TLegend *legend31 = new TLegend(0.70, 0.62, 1.0, 1.0); 
+      legend31->AddEntry((TObject*)0,"PbPb Collisons(50-100% <)","");
+      for(int i=0;i<5;i++){
+      legend31->AddEntry(hmT2_split[i], Form("Cut %.0f",cut[i]), "l");} // "l" specifies line for histogram
+      hmT2_split[0]->GetXaxis()->CenterTitle(true);
+      hmT2_split[0]->GetYaxis()->CenterTitle(true);
+      legend31->SetTextSize(.03); 
+      legend31->Draw();                                                     
+
+      hmT2_split2[0]->SetLineColor(kRed);
+      hmT2_split2[1]->SetLineColor(kOrange);
+      hmT2_split2[2]->SetLineColor(kBlack);
+      hmT2_split2[3]->SetLineColor(kViolet);
+      hmT2_split2[4]->SetLineColor(kBlue);
+
+      TCanvas *cmT2_split2 = new TCanvas();
+      hmT2_split2[0]->Draw();
+      for(int i=1;i<5;i++){
+      hmT2_split2[i]->Draw("SAME"); }
+     // hmT2_split2[0]->SetStats(0);
+      hmT2_split2[0]->GetYaxis()->SetRangeUser(1,(hmT2_split2[0]->GetMaximum())*1.2);
+      double wboson = 80.377;
+      TLine *line4 = new TLine(wboson, hmT2_split2[0]->GetMinimum(), wboson, (hmT2_split2[0]->GetMaximum()));
+      line4->SetLineStyle(3);
+      line4->SetLineColor(kBlack);
+      line4->Draw("SAME");
+      TLegend *legend32 = new TLegend(0.65, 0.50, .90, .95); 
+      legend32->AddEntry((TObject*)0,"PbPb Collisons(0-50% >)","");
+      for(int i=0;i<5;i++){
+      legend32->AddEntry(hmT2_split2[i], Form("Cut %.0f",cut[i]), "l");} // "l" specifies line for histogram
+      hmT2_split2[0]->GetXaxis()->CenterTitle(true);
+      hmT2_split2[0]->GetYaxis()->CenterTitle(true);
+      legend32->SetTextSize(.03); 
+      legend32->Draw();                                                                       
+
 /*
 crecogenPt5->SaveAs("C:/Users/user/Desktop/5RecoVsGenChg.png");  
 crat->SaveAs("C:/Users/user/Desktop/Ratio.png"); */
@@ -1181,8 +1292,11 @@ hbPt->SaveAs("C:/Users/user/Desktop/b Pt.png");*/
 
 //c_cmsPt->SaveAs("C:/Users/user/Desktop/Reco-Gen with Cut.png"); 
 //cmT->SaveAs("C:/Users/user/Desktop/EditRTransMassCuts.png"); 
-cmT2->SaveAs("C:/Users/user/Desktop/PbPbTransMassCuts.png");
-c_cmsPt2->SaveAs("C:/Users/user/Desktop/PbReco-Gen.png");
+//cmT2->SaveAs("C:/Users/user/Desktop/PbPbTransMassCuts.png");
+//c_cmsPt2->SaveAs("C:/Users/user/Desktop/PbSplitReco-Gen.png");
+//crecosize->SaveAs("C:/Users/user/Desktop/RecoParSize.png");
+cmT2_split->SaveAs("C:/Users/user/Desktop/LessTransMass.png");
+cmT2_split2->SaveAs("C:/Users/user/Desktop/GreaterTransMass.png");
 
 
 }
